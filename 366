@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Rotasi Tempat Duduk Siswa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #1a4a75;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .controls {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        select {
+            padding: 8px 16px;
+            font-size: 16px;
+            border: 2px solid #1a4a75;
+            border-radius: 6px;
+            background-color: white;
+            color: #1a4a75;
+            cursor: pointer;
+            font-weight: bold;
+            outline: none;
+        }
+
+        .classroom {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            max-width: 900px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .board {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .chair {
+            position: relative;
+            background-color: #e8f4fd;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 15px 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: help;
+        }
+
+        .chair:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            background-color: #d4ecfc;
+        }
+
+        .chair-number {
+            font-size: 12px;
+            font-weight: bold;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            border-bottom: 1px dashed #bdc3c7;
+            padding-bottom: 4px;
+        }
+
+        .students {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2c3e50;
+            min-height: 38px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* Gaya Pop-up Tooltip */
+        .chair .tooltip {
+            visibility: hidden;
+            width: 220px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 10px;
+            position: absolute;
+            z-index: 10;
+            bottom: 110%; /* Posisi di atas kursi */
+            left: 51%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 11px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+            line-height: 1.4;
+        }
+
+        /* Panah kecil di bawah pop-up */
+        .chair .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+
+        /* Munculkan pop-up saat cursor diarahkan */
+        .chair:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>JADWAL ROTASI TEMPAT DUDUK SISWA</h2>
+    
+    <div class="controls">
+        <label for="daySelect">Pilih Hari:</label>
+        <select id="daySelect" onchange="updateSeating()">
+            <option value="senin">Senin (Hari 1)</option>
+            <option value="selasa">Selasa (Hari 2)</option>
+            <option value="rabu">Rabu (Hari 3)</option>
+            <option value="kamis">Kamis (Hari 4)</option>
+            <option value="jumat">Jumat (Hari 5)</option>
+        </select>
+    </div>
+
+    <div class="classroom">
+        <div class="board">PAPAN TULIS / DEPAN KELAS</div>
+        
+        <div class="grid-container" id="seatingGrid">
+            </div>
+    </div>
+
+    <script>
+        // Database Nama & NPP sesuai dengan gambar daftar yang diunggah
+        const studentDatabase = {
+            1: { name: "ADIKA RIZQI IRFANTO", npp: "T072362" },
+            2: { name: "AGIL AL MUSTAQIM", npp: "T072363" },
+            3: { name: "ALIFIANNISA THUFAILAH S.", npp: "T072364" },
+            4: { name: "ARYUMI DESTRIANA", npp: "T072365" },
+            5: { name: "BASKORO HARGONO", npp: "T072366" },
+            6: { name: "BILGIS RAHEL MAHARSA", npp: "T072367" },
+            7: { name: "BOY NATHANAEL S.", npp: "T072368" },
+            8: { name: "DIMAS CAHYO SAPUTRO", npp: "T072369" },
+            9: { name: "DONNA DAFFA DAMAYANTY", npp: "T072370" },
+            10: { name: "DOTHI SISWO WARDOYO", npp: "T072371" },
+            11: { name: "DZAKY ARYASATYA L.", npp: "T072372" },
+            12: { name: "FAIZMAL SUGIARTO", npp: "T072373" },
+            13: { name: "GILRANDY ANDHIKA F.", npp: "T072374" },
+            14: { name: "KEVIND DAVID TORANG H.", npp: "T072375" },
+            15: { name: "MICHELLE SEVIRA ADIVANKA", npp: "T072376" },
+            16: { name: "MUHAMMAD FARID S.", npp: "T072377" },
+            17: { name: "MUHAMMAD HASAN V.", npp: "T072378" },
+            18: { name: "MUHAMMAD IQBAL", npp: "T072379" },
+            19: { name: "MUHAMMAD JAZULI L.", npp: "T072380" },
+            20: { name: "MUHAMMAD VICKY RIANDI", npp: "T072381" },
+            21: { name: "NI PUTU DIAH ANGGRENI", npp: "T072382" },
+            22: { name: "PRISKILA PUTRI MENGKILO", npp: "T072383" },
+            23: { name: "R. RAISYA F BENTANGK.", npp: "T072384" },
+            24: { name: "RASYID NUR ALLAM", npp: "T072385" },
+            25: { name: "SEKARINGTYAS HAPSARI P.", npp: "T072386" },
+            26: { name: "SITI RAMA DANIATI", npp: "T072387" },
+            27: { name: "THOMAS GILLINDRA A. P.", npp: "T072388" },
+            28: { name: "YOSUA PARTAHIAN SIAHAAN", npp: "T072389" },
+            29: { name: "ZEPANYA VALENTIN", npp: "T072390" },
+            30: { name: "Siswa 30", npp: "N/A" } // Cadangan jika nomor 30 muncul di tabel rotasi
+        };
+
+        // Mapping index pasangan siswa di setiap kursi berdasarkan gambar rotasi pertama
+        const seatingRotations = {
+            senin: [
+                [28, 5], [1, 23], [13, 2],
+                [16, 24], [20, 27], [10, 7],
+                [9, 22], [30, 29], [6, 15],
+                [14, 17], [12, 25], [18, 11],
+                [19, 26], [21, 8], [3, 4]
+            ],
+            selasa: [
+                [3, 8], [28, 4], [1, 5],
+                [13, 23], [16, 2], [20, 24],
+                [10, 27], [9, 7], [30, 22],
+                [6, 29], [14, 15], [12, 17],
+                [18, 25], [19, 11], [21, 26]
+            ],
+            rabu: [
+                [17, 10], [22, 14], [30, 28],
+                [29, 18], [7, 21], [5, 11],
+                [26, 1], [12, 24], [20, 2],
+                [16, 3], [27, 23], [25, 8],
+                [6, 19], [13, 4], [9, 15]
+            ],
+            kamis: [
+                [21, 28], [24, 11], [13, 6],
+                [23, 22], [20, 5], [14, 26],
+                [17, 8], [29, 3], [19, 18],
+                [7, 15], [12, 16], [10, 2],
+                [9, 30], [1, 25], [4, 27]
+            ],
+            jumat: [
+                [26, 17], [15, 16], [5, 21],
+                [6, 25], [1, 7], [11, 22],
+                [9, 14], [19, 2], [13, 29],
+                [18, 27], [24, 30], [8, 20],
+                [12, 28], [4, 23], [10, 3]
+            ]
+        };
+
+        function generateGrid() {
+            const grid = document.getElementById('seatingGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= 15; i++) {
+                const chairDiv = document.createElement('div');
+                chairDiv.className = 'chair';
+                
+                chairDiv.innerHTML = `
+                    <div class="chair-number">Kursi ${i}</div>
+                    <div class="students" id="students-${i}">
+                        </div>
+                    <div class="tooltip" id="tooltip-${i}">
+                        </div>
+                `;
+                grid.appendChild(chairDiv);
+            }
+        }
+
+        function updateSeating() {
+            const selectedDay = document.getElementById('daySelect').value;
+            const currentRotation = seatingRotations[selectedDay];
+            
+            for (let i = 1; i <= 15; i++) {
+                const pair = currentRotation[i - 1];
+                const s1Num = pair[0];
+                const s2Num = pair[1];
+                
+                const s1 = studentDatabase[s1Num];
+                const s2 = studentDatabase[s2Num];
+
+                // Update teks visual nama siswa di kursi
+                const nameDisplay = `
+                    <span>${s1.name}</span>
+                    <span style="color:#bdc3c7; font-size:10px;">&</span>
+                    <span>${s2.name}</span>
+                `;
+                document.getElementById(`students-${i}`).innerHTML = nameDisplay;
+
+                // Update isi teks untuk Pop-up saat di-hover
+                const tooltipContent = `
+                    <strong>Asal Posisi:</strong><br>
+                    Siswa ${s1Num} (${s1.npp})<br>
+                    &<br>
+                    Siswa ${s2Num} (${s2.npp})
+                `;
+                document.getElementById(`tooltip-${i}`).innerHTML = tooltipContent;
+            }
+        }
+
+        // Jalankan saat pertama kali dibuka
+        generateGrid();
+        updateSeating();
+    </script>
+</body>
+</html>
