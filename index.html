@@ -111,6 +111,7 @@
             flex-direction: column;
             justify-content: center;
             gap: 4px;
+            word-break: break-word; /* Mencegah teks keluar kotak di layar kecil */
         }
 
         /* Gaya Pop-up Tooltip */
@@ -126,7 +127,7 @@
             z-index: 10;
             bottom: 110%; /* Posisi di atas kursi */
             left: 50%;
-            margin-left: -110px;
+            transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.2s;
             font-size: 11px;
@@ -154,67 +155,54 @@
         }
 
         /* ========================================================
-           SINTAKS TAMBAHAN UNTUK VIEW MOBILE (LAYAR MAKSIMAL 768px)
+           SYNTAX TAMBAHAN UNTUK VIEW MOBILE (RESPONSIF 3 KOLOM)
            ======================================================== */
-        @media screen and (max-width: 768px) {
+        @media screen and (max-width: 600px) {
             body {
                 padding: 10px;
             }
-
+            
             h2 {
                 font-size: 18px;
             }
 
-            .controls {
-                margin-bottom: 15px;
-            }
-
-            select {
-                padding: 6px 12px;
-                font-size: 14px;
-            }
-
             .classroom {
                 padding: 15px;
-                border-radius: 8px;
             }
 
             .board {
                 margin-bottom: 20px;
-                font-size: 14px;
+                font-size: 12px;
                 padding: 8px;
             }
 
-            /* Mengubah susunan grid menjadi 1 kolom saja di HP */
+            /* Memastikan grid tetap dipisah menjadi 3 kolom dengan jarak lebih rapat */
             .grid-container {
-                grid-template-columns: 1fr;
-                gap: 12px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px; 
             }
 
             .chair {
-                padding: 12px 8px;
+                padding: 8px 4px;
             }
 
-            /* Menyesuaikan ukuran font nama siswa agar muat */
+            .chair-number {
+                font-size: 9px;
+                margin-bottom: 4px;
+            }
+
+            /* Mengecilkan ukuran nama siswa agar pas dalam 3 kolom layar HP */
             .students {
-                font-size: 12px;
-                min-height: auto;
+                font-size: 9px;
+                min-height: 45px;
+                gap: 2px;
             }
 
-            /* Menggeser letak pop-up agar aman dan tidak terpotong layar HP */
+            /* Penyesuaian ukuran pop-up di hp agar tidak keluar layar */
             .chair .tooltip {
-                width: 260px;
-                margin-left: -130px;
-                bottom: auto;
-                top: 50%;
-                left: 50%;
-                transform: translateY(-50%);
-                z-index: 20;
-            }
-            
-            /* Menghilangkan panah kecil di HP agar tampilan tooltip lebih clean */
-            .chair .tooltip::after {
-                display: none;
+                width: 140px;
+                font-size: 9px;
+                padding: 6px 4px;
             }
         }
     </style>
@@ -272,10 +260,11 @@
             26: { name: "SITI RAMA DANIATI", npp: "T072387" },
             27: { name: "THOMAS GILLINDRA A. P.", npp: "T072388" },
             28: { name: "YOSUA PARTAHIAN SIAHAAN", npp: "T072389" },
-            29: { name: "ZEVANYA VALENTIN", npp: "T072390" },
-            30: { name: "ANDA DEA PUTRI APRILIA", npp: "P062007" }
+            29: { name: "ZEPANYA VALENTIN", npp: "T072390" },
+            30: { name: "ANDA DEA PUTRI APRILIA", npp: "P062007" } 
         };
 
+        // Mapping index pasangan siswa di setiap kursi berdasarkan gambar rotasi pertama
         const seatingRotations = {
             senin: [
                 [28, 5], [1, 23], [13, 2],
@@ -324,8 +313,10 @@
                 
                 chairDiv.innerHTML = `
                     <div class="chair-number">Kursi ${i}</div>
-                    <div class="students" id="students-${i}"></div>
-                    <div class="tooltip" id="tooltip-${i}"></div>
+                    <div class="students" id="students-${i}">
+                        </div>
+                    <div class="tooltip" id="tooltip-${i}">
+                        </div>
                 `;
                 grid.appendChild(chairDiv);
             }
@@ -343,6 +334,7 @@
                 const s1 = studentDatabase[s1Num];
                 const s2 = studentDatabase[s2Num];
 
+                // Update teks visual nama siswa di kursi
                 const nameDisplay = `
                     <span>${s1.name}</span>
                     <span style="color:#bdc3c7; font-size:10px;">&</span>
@@ -350,6 +342,7 @@
                 `;
                 document.getElementById(`students-${i}`).innerHTML = nameDisplay;
 
+                // Update isi teks untuk Pop-up saat di-hover
                 const tooltipContent = `
                     <strong>Asal Posisi:</strong><br>
                     Siswa ${s1Num} (${s1.npp})<br>
@@ -360,6 +353,7 @@
             }
         }
 
+        // Jalankan saat pertama kali dibuka
         generateGrid();
         updateSeating();
     </script>
