@@ -125,7 +125,7 @@
             position: absolute;
             z-index: 10;
             bottom: 110%; /* Posisi di atas kursi */
-            left: 51%;
+            left: 50%;
             margin-left: -110px;
             opacity: 0;
             transition: opacity 0.2s;
@@ -152,6 +152,71 @@
             visibility: visible;
             opacity: 1;
         }
+
+        /* ========================================================
+           SINTAKS TAMBAHAN UNTUK VIEW MOBILE (LAYAR MAKSIMAL 768px)
+           ======================================================== */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .controls {
+                margin-bottom: 15px;
+            }
+
+            select {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+
+            .classroom {
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .board {
+                margin-bottom: 20px;
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            /* Mengubah susunan grid menjadi 1 kolom saja di HP */
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .chair {
+                padding: 12px 8px;
+            }
+
+            /* Menyesuaikan ukuran font nama siswa agar muat */
+            .students {
+                font-size: 12px;
+                min-height: auto;
+            }
+
+            /* Menggeser letak pop-up agar aman dan tidak terpotong layar HP */
+            .chair .tooltip {
+                width: 260px;
+                margin-left: -130px;
+                bottom: auto;
+                top: 50%;
+                left: 50%;
+                transform: translateY(-50%);
+                z-index: 20;
+            }
+            
+            /* Menghilangkan panah kecil di HP agar tampilan tooltip lebih clean */
+            .chair .tooltip::after {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -173,7 +238,7 @@
         <div class="board">PAPAN TULIS / DEPAN KELAS</div>
         
         <div class="grid-container" id="seatingGrid">
-            </div>
+        </div>
     </div>
 
     <script>
@@ -207,11 +272,10 @@
             26: { name: "SITI RAMA DANIATI", npp: "T072387" },
             27: { name: "THOMAS GILLINDRA A. P.", npp: "T072388" },
             28: { name: "YOSUA PARTAHIAN SIAHAAN", npp: "T072389" },
-            29: { name: "ZEPANYA VALENTIN", npp: "T072390" },
-            30: { name: "ANDA DEA PUTRI APRILIA", npp: "P062007" } // Cadangan jika nomor 30 muncul di tabel rotasi
+            29: { name: "ZEVANYA VALENTIN", npp: "T072390" },
+            30: { name: "ANDA DEA PUTRI APRILIA", npp: "P062007" }
         };
 
-        // Mapping index pasangan siswa di setiap kursi berdasarkan gambar rotasi pertama
         const seatingRotations = {
             senin: [
                 [28, 5], [1, 23], [13, 2],
@@ -260,10 +324,8 @@
                 
                 chairDiv.innerHTML = `
                     <div class="chair-number">Kursi ${i}</div>
-                    <div class="students" id="students-${i}">
-                        </div>
-                    <div class="tooltip" id="tooltip-${i}">
-                        </div>
+                    <div class="students" id="students-${i}"></div>
+                    <div class="tooltip" id="tooltip-${i}"></div>
                 `;
                 grid.appendChild(chairDiv);
             }
@@ -281,7 +343,6 @@
                 const s1 = studentDatabase[s1Num];
                 const s2 = studentDatabase[s2Num];
 
-                // Update teks visual nama siswa di kursi
                 const nameDisplay = `
                     <span>${s1.name}</span>
                     <span style="color:#bdc3c7; font-size:10px;">&</span>
@@ -289,7 +350,6 @@
                 `;
                 document.getElementById(`students-${i}`).innerHTML = nameDisplay;
 
-                // Update isi teks untuk Pop-up saat di-hover
                 const tooltipContent = `
                     <strong>Asal Posisi:</strong><br>
                     Siswa ${s1Num} (${s1.npp})<br>
@@ -300,7 +360,6 @@
             }
         }
 
-        // Jalankan saat pertama kali dibuka
         generateGrid();
         updateSeating();
     </script>
