@@ -111,7 +111,7 @@
             flex-direction: column;
             justify-content: center;
             gap: 4px;
-            word-break: break-word; /* Mencegah teks keluar kotak di layar kecil */
+            word-break: break-word;
         }
 
         /* Gaya Pop-up Tooltip */
@@ -125,7 +125,7 @@
             padding: 8px 10px;
             position: absolute;
             z-index: 10;
-            bottom: 110%; /* Posisi di atas kursi */
+            bottom: 110%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
@@ -136,7 +136,6 @@
             line-height: 1.4;
         }
 
-        /* Panah kecil di bawah pop-up */
         .chair .tooltip::after {
             content: "";
             position: absolute;
@@ -148,15 +147,12 @@
             border-color: #2c3e50 transparent transparent transparent;
         }
 
-        /* Munculkan pop-up saat cursor diarahkan */
         .chair:hover .tooltip {
             visibility: visible;
             opacity: 1;
         }
 
-        /* ========================================================
-           SYNTAX TAMBAHAN UNTUK VIEW MOBILE (RESPONSIF 3 KOLOM)
-           ======================================================== */
+        /* Responsive Mobile View (3 Kolom) */
         @media screen and (max-width: 600px) {
             body {
                 padding: 10px;
@@ -176,7 +172,6 @@
                 padding: 8px;
             }
 
-            /* Memastikan grid tetap dipisah menjadi 3 kolom dengan jarak lebih rapat */
             .grid-container {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 8px; 
@@ -191,14 +186,12 @@
                 margin-bottom: 4px;
             }
 
-            /* Mengecilkan ukuran nama siswa agar pas dalam 3 kolom layar HP */
             .students {
                 font-size: 9px;
                 min-height: 45px;
                 gap: 2px;
             }
 
-            /* Penyesuaian ukuran pop-up di hp agar tidak keluar layar */
             .chair .tooltip {
                 width: 140px;
                 font-size: 9px;
@@ -212,13 +205,13 @@
     <h2>JADWAL ROTASI TEMPAT DUDUK</h2>
     
     <div class="controls">
-        <label for="daySelect">Pilih Hari:</label>
+        <label for="daySelect">Pilih Tanggal:</label>
         <select id="daySelect" onchange="updateSeating()">
-            <option value="senin">Senin, 13 Juli 2026</option>
-            <option value="selasa">Selasa, 14 Juli 2026</option>
-            <option value="rabu">Rabu, 15 Juli 2026</option>
-            <option value="kamis">Kamis, 16 Juli 2026</option>
-            <option value="jumat">Jum'at, 17 Juli 2026</option>
+            <option value="senin">Senin, 20 Juli 2026</option>
+            <option value="selasa">Selasa, 21 Juli 2026</option>
+            <option value="rabu">Rabu, 22 Juli 2026</option>
+            <option value="kamis">Kamis, 23 Juli 2026</option>
+            <option value="jumat">Jum'at, 24 Juli 2026</option>
         </select>
     </div>
 
@@ -230,7 +223,7 @@
     </div>
 
     <script>
-        // Database Nama & NPP sesuai dengan gambar daftar yang diunggah
+        // Database Profil Siswa
         const studentDatabase = {
             1: { name: "ADIKA RIZQI IRFANTO", npp: "T072362" },
             2: { name: "AGIL AL MUSTAQIM", npp: "T072363" },
@@ -264,42 +257,42 @@
             30: { name: "ANDA DEA PUTRI APRILIA", npp: "P062007" } 
         };
 
-        // Mapping index pasangan siswa di setiap kursi berdasarkan gambar rotasi pertama
+        // Hasil Acak Kursi Baru & Unik (Senin - Jumat)
         const seatingRotations = {
             senin: [
-                [28, 5], [1, 23], [13, 2],
-                [16, 24], [20, 27], [10, 7],
-                [9, 22], [30, 29], [6, 15],
-                [14, 17], [12, 25], [18, 11],
-                [19, 26], [21, 8], [3, 4]
+                [9, 24], [5, 20], [17, 3],
+                [11, 26], [28, 13], [15, 30],
+                [1, 16], [19, 4], [7, 22],
+                [25, 10], [14, 29], [2, 18],
+                [23, 8], [6, 21], [12, 27]
             ],
             selasa: [
-                [3, 8], [28, 4], [1, 5],
-                [13, 23], [16, 2], [20, 24],
-                [10, 27], [9, 7], [30, 22],
-                [6, 29], [14, 15], [12, 17],
-                [18, 25], [19, 11], [21, 26]
+                [22, 13], [30, 21], [18, 9],
+                [26, 7], [14, 5], [2, 23],
+                [10, 29], [6, 25], [27, 16],
+                [4, 11], [17, 8], [12, 3],
+                [1, 20], [15, 24], [28, 19]
             ],
             rabu: [
-                [17, 10], [22, 14], [30, 28],
-                [29, 18], [7, 21], [5, 11],
-                [26, 1], [12, 24], [20, 2],
-                [16, 3], [27, 23], [25, 8],
-                [6, 19], [13, 4], [9, 15]
+                [5, 27], [13, 1], [21, 9],
+                [29, 17], [7, 25], [16, 4],
+                [24, 12], [2, 20], [11, 28],
+                [19, 8], [26, 15], [3, 22],
+                [30, 14], [18, 6], [10, 23]
             ],
             kamis: [
-                [21, 28], [24, 11], [13, 6],
-                [23, 22], [20, 5], [14, 26],
-                [17, 8], [29, 3], [19, 18],
-                [7, 15], [12, 16], [10, 2],
-                [9, 30], [1, 25], [4, 27]
+                [16, 11], [24, 19], [12, 7],
+                [4, 28], [20, 15], [8, 3],
+                [27, 22], [5, 30], [14, 9],
+                [23, 18], [6, 1], [29, 25],
+                [13, 10], [21, 17], [2, 26]
             ],
             jumat: [
-                [26, 17], [15, 16], [5, 21],
-                [6, 25], [1, 7], [11, 22],
-                [9, 14], [19, 2], [13, 29],
-                [18, 27], [24, 30], [8, 20],
-                [12, 28], [4, 23], [10, 3]
+                [19, 10], [3, 23], [15, 6],
+                [28, 18], [11, 2], [22, 12],
+                [7, 27], [26, 17], [1, 21],
+                [13, 4], [25, 16], [9, 29],
+                [20, 12], [30, 8], [24, 14]
             ]
         };
 
@@ -334,7 +327,7 @@
                 const s1 = studentDatabase[s1Num];
                 const s2 = studentDatabase[s2Num];
 
-                // Update teks visual nama siswa di kursi
+                // Update nama di kursi
                 const nameDisplay = `
                     <span>${s1.name}</span>
                     <span style="color:#bdc3c7; font-size:10px;">&</span>
@@ -342,7 +335,7 @@
                 `;
                 document.getElementById(`students-${i}`).innerHTML = nameDisplay;
 
-                // Update isi teks untuk Pop-up saat di-hover
+                // Update info di pop-up
                 const tooltipContent = `
                     <strong>Asal Posisi:</strong><br>
                     Siswa ${s1Num} (${s1.npp})<br>
@@ -353,7 +346,7 @@
             }
         }
 
-        // Jalankan saat pertama kali dibuka
+        // Jalankan sistem saat web dibuka
         generateGrid();
         updateSeating();
     </script>
